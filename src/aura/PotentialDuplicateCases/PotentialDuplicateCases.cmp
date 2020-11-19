@@ -1,0 +1,73 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+                controller="DuplicateCasesCntrl" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:attribute name="cases" type="Case[]" />
+	<aura:attribute name="errorMsg" type="String" />
+	<aura:attribute name="isDuplicate" type="Boolean" />
+	<article class="slds-card">
+		<div class="slds-card__body slds-card__body_inner">
+			<aura:if isTrue="{! !empty(v.errorMsg)}">
+				<ui:message title="Error" severity="error">
+            {!v.errorMsg}
+        </ui:message>
+			</aura:if>
+			<aura:if isTrue="{!v.isDuplicate}">
+				<div class="divCss"> 
+        	{!$Label.c.PotentialDuplicate}
+    	</div>
+				<table class="slds-table slds-table_bordered slds-table_cell-buffer" role="grid" width="100%">
+					<thead>
+						<tr class="slds-line-height_reset">
+							<th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col" width="10%">
+								<a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+									<span class="slds-assistive-text">Sort </span>
+									<span class="slds-truncate slds-align_absolute-center" title="Serial Number">#</span>
+								</a>
+							</th>
+							<th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col" width="25%">
+								<a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+									<span class="slds-assistive-text">Sort </span>
+									<span class="slds-truncate slds-align_absolute-center" title="Case Number">Number</span>
+								</a>
+							</th>
+							<th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col" width="40%">
+								<a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+									<span class="slds-assistive-text">Sort </span>
+									<span class="slds-truncate slds-align_absolute-center" title="Subject">Subject</span>
+								</a>
+							</th>
+							<th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col" width="25%">
+								<a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+									<span class="slds-assistive-text">Sort </span>
+									<span class="slds-truncate slds-align_absolute-center" title="Case Status">Status</span>
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody class="tableBody">
+						<aura:iteration aura:id="cId" items="{!v.cases}" var="duplicateCase" indexVar="indexVal">
+							<tr >
+								<td scope="row" data-label="Sl. No." style="text-align: center;" width="5%">
+									<ui:outputText value="{!indexVal+1}" />
+								</td>
+								<td scope="row" data-label="Case Number" style="text-align: center;" width="25%">
+									<!--<a id="{!duplicateCase.Id}"><ui:outputText value="{!duplicateCase.CaseNumber}" title="{!duplicateCase.Id}" 
+                                               click="{!c.handleClick}" ></ui:outputText></a>-->
+									<a>
+										<lightning:formattedText linkify="true" value="{!duplicateCase.CaseNumber}" id="{!duplicateCase.Id}" onclick="{!c.handleClick}"/>
+									</a>
+								</td>
+								<td scope="row" data-label="Subject" style="text-align: center;white-space: pre-wrap;" width="45%">
+									<ui:outputText value="{!duplicateCase.Subject}" />
+								</td>
+								<td scope="row" data-label="Case Status" style="text-align: center;" width="25%">
+									<ui:outputText value="{!duplicateCase.Status}" />
+								</td>
+							</tr>
+						</aura:iteration>
+					</tbody>
+				</table>
+			</aura:if>
+		</div>
+	</article>
+</aura:component>

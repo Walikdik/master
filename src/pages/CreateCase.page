@@ -1,0 +1,5 @@
+<apex:page standardController="case">
+
+  test
+  <h1>file upload</h1>
+</apex:page>

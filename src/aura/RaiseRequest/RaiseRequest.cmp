@@ -1,0 +1,66 @@
+<aura:component controller="RaiseRequestCtrl" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" >
+	
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="category" type="String"/>
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="showSpin" type="Boolean" default="false"/>
+    <aura:attribute name="userId" type="String"/>
+    <aura:attribute name="objCase" type="object"/>
+    <aura:attribute name="docId" type="string" />
+    <aura:attribute name="caseRecordId" type="string"/>
+    <aura:attribute name="accept" type="List" default="['.jpg', '.jpeg','.pdf','.png']"/>
+    <aura:attribute name="mapMarkers" type="Object[]" default="[{location: {Street: '415 Mission St', City: 'San Francisco',State: 'CA' }, title: 'Salesforce Tower', description: 'San Francisco\'s tallest building',icon: 'standard:account',value: 'location001'}]"/>
+    <aura:attribute name="zoomLevel" type="Integer" default="12"/>
+    <aura:attribute name="latit" type="String"/>
+    <aura:attribute name="longit" type="String"/>
+    
+    <aura:if isTrue="{!v.showSpin}">
+    	<lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    <div class="slds-form" style="padding:10px">
+        <h3 class="slds-text-heading_medium slds-text-align_center">CONTACT CUSTOMER SUPPORT</h3>
+        <h3 class="slds-text-heading_small slds-text-align_center">TELL US HOW WE CAN HELP</h3>
+        <br/>
+        <div class="slds-form-element"> 
+          <lightning:input value="{!v.objCase.name}" label="Contact Name" disabled="true" />
+        </div>
+        <br/>
+        <div class="slds-form-element">
+            <lightning:input value="{!v.objCase.obCase.Reason}" label="Case Category" disabled="true" />
+        </div>
+        <br/>
+        <div class="slds-form-element">
+          	<lightning:input aura:id="fieldId" value="{!v.objCase.obCase.Subject}" label="Subject" required="true" />
+        </div>
+        <br/>
+        <div class="slds-form-element"> 
+            <lightning:textarea aura:id="fieldId" value="{!v.objCase.obCase.Location__c}" label="Location" required="true" />
+        </div>
+        <br/> 
+        <!-- <div>
+        	<lightning:map 
+                mapMarkers="{! v.mapMarkers }" listView="visible"  
+                zoomLevel="{!v.zoomLevel}" />
+        </div> -->
+        <div class="slds-form-element">
+            <lightning:textarea aura:id="fieldId" value="{!v.objCase.obCase.Description}" label="Description" required="true" />
+        </div>
+        <br/>
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <c:fileUpload aura:id="fileUploader" parentId="{!v.caseRecordId}"/>
+            </div>
+        </div>
+        <br/>
+        <div class="slds-form-element">
+          <div class="slds-form-element__control slds-text-align_center">
+              <lightning:button label="Back" title="Back" onclick="{!c.handleBack}" />
+              <lightning:button variant="brand" label="Submit" title="Submit" onclick="{!c.handleSubmit}" />
+              <br/><br/>
+          </div>
+        </div>
+    </div>
+    
+</aura:component>

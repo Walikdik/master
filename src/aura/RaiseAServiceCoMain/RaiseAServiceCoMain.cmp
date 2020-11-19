@@ -1,0 +1,322 @@
+<aura:component implements="force:appHostable,force:hasRecordId,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"    access="global">
+    
+    <!-- Attributes -->
+    <aura:attribute name="caseObj"
+                    type="Object"
+                    access="public"
+                    description="Case object that needs to be created."/>
+    <aura:attribute name="suggestions"
+                    type="Object[]"
+                    access="public"
+                    description="suggestions for query."/>
+    <aura:attribute name="isShowSubmitRequest"
+                    type="Boolean"
+                    default="false"
+                    access="private"
+                    description="to show submit request box."/>
+    
+    <aura:attribute name="isResolvedUsingKnowledge"
+                    type="Boolean"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    <aura:attribute name="isGettingSuggestions"
+                    type="Boolean"
+                    access="private"
+                    description="To keep track if a request has been sent to server to fetch suggestions."/>
+    <aura:attribute name="errorMessage"
+                    type="String"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    <aura:attribute name="suggestionErrorMessage"
+                    type="String"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    <aura:attribute name="fileName"
+                    type="String"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    <aura:attribute name="selectedSuggestions"
+                    type="Object"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    <aura:attribute name="systemConfig"
+                    type="Object"
+                    access="private"
+                    description="To keep track if the query was resolved using standard knowledge article."/>
+    
+    <aura:attribute name="allowedFileFormat" 
+                    type="String"
+                    access="public"
+                    default="png,
+                             jpg,
+                             jpeg,
+                             jpe,
+                             email,
+                             excel,
+                             xlsx,
+                             pptx,
+                             txt,
+                             docx,
+                             docm,
+                             doc,
+                             dotx,
+                             dotm,
+                             dot,
+                             pdf,
+                             xps,
+                             mht,
+                             mhtml,
+                             html,
+                             htm,
+                             rtf,
+                             txt,
+                             xml"
+                    description="Comma seprated file format."/>
+    
+    
+    
+    <!-- Handlers -->
+    <aura:handler name="init"
+                  value="{!this}"
+                  action="{!c.doInit}"/>
+    <aura:handler name="change"
+                  value="{!v.caseObj.LG_Category_L1__c}"
+                  action="{!c.l1ChangeHandler}"/>
+    <aura:handler name="change"
+                  value="{!v.caseObj.LG_Sub_Category_L2__c}"
+                  action="{!c.getSuggestions}"/>
+    
+    <!-- Markup -->
+    
+    <lightning:spinner size="medium"
+                       variant="brand"
+                       alternativeText="Loading..."
+                       class="{!if(v.isLoading, '', 'slds-hide')}"/>
+    
+    <aura:if isTrue="{!v.errorMessage}">
+        
+        {!v.errorMessage}
+    </aura:if>
+    
+    <section id="lodha-wraper" class="{!if(v.errorMessage, 'slds-hide', '')}">
+        <div class="lg-right-side">
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+                <div class="slds-size_1-of-1 slds-col" onclick='{!c.navigateBack}'>
+                <ul class="breacrumb">
+                    <li>Service Request</li>
+                    <li class="active">Raise A Service Request</li>
+                </ul>
+            </div>
+                
+                <div class="slds-size_1-of-1 slds-large-size_1-of-2 slds-col">
+                    <h3 class="lg-heading-large hdng-pdng slds-m-top_medium"><span>Raise</span>a service request</h3>
+                </div>
+                <!--<div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1 slds-size_1-of-1 ">
+                                <a href="/s/my-priva" class="priva-ben-link">Click here for <span>PRIVA</span> benefits</a>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <div class="lg-seperator">&nbsp;</div>
+                            </div>-->
+                
+                <div class="cstm-form slds-m-top_x-small fixedlayout">
+                    <div class="slds-grid slds-wrap">
+                        <h4 class="slds-col slds-size_1-of-1 lg-form-heading">I have a query related to...</h4>
+                        <div class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1">
+                            <div class="slds-form-element">
+                                <label class="uiLabel-left form-element__label uiLabel">
+                                    <span>Select Your Category</span>
+                                </label>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1">
+                            <div class="slds-form-element">
+                                <label class="uiLabel-left form-element__label uiLabel">
+                                    <span>Select your sub-category?</span>
+                                </label>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-wrap">
+                        <aura:if isTrue="{!and(v.suggestions, !v.suggestionErrorMessage)}">
+                            <h4 class="slds-col slds-size_1-of-1 lg-form-heading slds-m-top_medium">Help Articles</h4>
+                            <div class="slds-col slds-medium-size_1-of-1 slds-size_1-of-1">
+                                <aura:iteration items="{!v.suggestions}"
+                                                var="suggestion"
+                                                indexVar="index">
+                                    
+                                    <div class="{!if(suggestion.isSelected, 'active', 'accordian slds-grid slds-wrap')}">
+                                        <div class="slds-size_1-of-1 slds-align_absolute-center curs-pointer"
+                                             onclick='{!c.showSuggestionBody}'
+                                             id="{!index}">
+                                        <h4 class="heading-common slds-size_4-of-5">
+                                            {!suggestion.Title}
+                                        </h4>
+                                        <a onclick = "{!c.toggleView}"
+                                           class='slds-col slds-size_1-of-5'
+                                           id="{!index}">
+                                            <span class="slds-hide"
+                                                  id="{!'dashBut_'+index}"><lightning:buttonicon
+                                                                        iconName="utility:dash"
+                                                                       class="slds-float_right accord-btn"
+                                                                        size="medium"
+                                                                        title="title"
+                                                                        variant="container"
+                                                                        />
+                                            </span>
+                                            <span class=""
+                                                  id="{!'addBut_'+index}"
+                                                  >
+                                                <lightning:buttonIcon 
+                                                                  iconName="utility:add"
+                                                                  class="slds-float_right accord-btn"
+                                                                  size="medium"
+                                                                  title="title"
+                                                                  variant="container"
+                                                                  />
+                                                </span>
+                                            
+                                        </a>
+                                            </div>
+                                        <div class="{!if(and(suggestion.LG_SR_Options__c,suggestion.isBodyVisible), 'lgwrap slds-m-top_x-small', 'slds-hide')}" id="{!'hidethis_'+index}">	
+                                            <p class="lg-pregraph slds-m-top_xx-small">{!suggestion.Summary}</p>
+                                            <p class="lg-pregraph slds-m-top_xx-small">
+                                                <ui:outputRichText value="{!suggestion.LG_Details__c}"/>
+                                            </p>
+                                            <p class="heading_small">Is your Query Resolved?</p>
+                                            <div class="slds-medium-size_1-of-1 slds-size_1-of-1">
+                                                <div class="lg-cstm-btn-group" role="group">
+                                                    <span onclick="{!c.solvedUsingKnowledge}"
+                                                          id="{!index}">
+                                                        <lightning:button class="{!if(suggestion.isResolvedUsingKnowledge == 'yes', 
+                                                                                 'slds-button lg-btn-outline-gray icon yicn', 
+                                                                                 'slds-button lg-btn-outline-gray icon yicn')}"
+                                                                          label="Yes"
+                                                                          variant="neutral" />
+                                                    </span>
+                                                    <span onclick="{!c.notSolvedUsingKnowledge}"
+                                                          id="{!index}">
+                                                        <lightning:button class="{!if(suggestion.isResolvedUsingKnowledge == 'No', 
+                                                                                 'slds-button lg-btn-outline-gray icon nicn',
+                                                                                 'slds-button lg-btn-outline-gray icon nicn')}"
+                                                                          label="No"
+                                                                          variant="neutral" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="{!if(and(!suggestion.LG_SR_Options__c,
+                                                suggestion.isBodyVisible),
+                                                'lgwrap slds-grid slds-wrap',
+                                                'slds-hide')}">
+                                        <p class="heading_small">
+                                            Is your Query Resolved?
+                                            </p>
+                                        <div class="slds-medium-size_1-of-1 slds-size_1-of-1 slds-m-top_small">
+                                            <div class="lg-cstm-btn-group" role="group">
+                                                <span onclick="{!c.likeArticle}"
+                                                      id="{!index}">
+                                                    <lightning:button class="{!if(suggestion.isResolvedUsingKnowledge == 'yes', 
+                                                                             'slds-button lg-btn-outline icon yicn', 
+                                                                             'slds-button lg-btn-outline-gray icon yicn')}"
+                                                                      label="Yes"
+                                                                      variant="neutral" />
+                                                </span>
+                                                <span onclick="{!c.dislikeArticle}"
+                                                      id="{!index}">
+                                                    <lightning:button class="{!if(suggestion.isResolvedUsingKnowledge == 'No', 
+                                                                             'slds-button lg-btn-outline icon nicn',
+                                                                             'slds-button lg-btn-outline-gray icon nicn')}"
+                                                                      label="No"
+                                                                      variant="neutral" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <!-- If SR Option is true then user will be able to create a case -->     
+                                    <div class="{!if(and(suggestion.LG_SR_Options__c, 
+                                                suggestion.isBodyVisible),
+                                                'slds-grid slds-wrap',
+                                                'slds-hide')}">
+                                        <!--<h4 class="slds-size_1-of-1 lg-form-heading">
+                                                        Does this help resolve your query?
+                                                    </h4>-->
+                                        
+                                    </div>
+                                                                        <aura:if isTrue="{!suggestion.isResolvedUsingKnowledge == 'No'}">
+                                        
+                                    </aura:if>
+                                </aura:iteration>
+                            </div>
+                        </aura:if>
+                        
+                        
+                       <!-- <aura:if isTrue="{!!and(v.suggestions, !v.suggestionErrorMessage)}">-->
+                        
+                        <aura:if isTrue="{!v.isShowSubmitRequest}">
+                            
+                            <div class="slds-medium-size_1-of-1 slds-size_1-of-1 slds-m-top_x-large">
+                                <div class="slds-grid slds-wrap">
+                                    <h4 class="slds-col slds-size_1-of-1 lg-form-heading">
+                                        Can't find your query or solution to your query in help articles?
+                                        <p class="x-small-heading servc-hdng">Enter service request details</p>
+                                        </h4>
+                                    
+                                    
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <ui:inputTextArea class="lgtextarea"
+                                                              rows="3"
+                                                              value="{!v.caseObj.Description}" 
+                                                              placeholder="Enter Service Request Here"
+                                                              aura:id="remark"
+                                                              label="Remarks"
+                                                              updateOn="keyup"/>
+                                            <span class="chrar-size">
+                                                Characters Left: {!1000 - (v.caseObj.Description.length ? v.caseObj.Description.length : 0)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1">
+                                        <p class="atach-lbl">Attach File</p>
+                                        <div class="slds-form-element cstm-inpufile cstm-inpt-brder">
+                                            <lightning:input aura:id="uploadFile"
+                                                             class="input-file"
+                                                             onchange="{!c.handleFilesChange}" 
+                                                             type="file" 
+                                                             name="file" 
+                                                             multiple="false"/>
+                                            <div class = "slds-text-body_small slds-text-color_error">
+                                                {!v.fileName} 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-1 slds-cstm-element slds-m-top_large">
+                                        <div class="slds-align_absolute-center lg-cstm-btn-group" role="group">
+                                            <lightning:button class="slds-button lg-cstm-btn lg-primart-btn"
+                                                              onclick="{!c.submitRequest}"
+                                                              label="Submit Request"
+                                                              variant="neutral" />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- {!if(v.suggestionErrorMessage, v.suggestionErrorMessage, 'Please select query.')} -->
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aura:component>

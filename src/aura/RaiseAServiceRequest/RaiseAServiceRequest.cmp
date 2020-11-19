@@ -1,0 +1,90 @@
+<aura:component controller="RaiseRequestCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,flexipage:availableForAllPageTypes" access="global" >
+    <aura:attribute name="showSpin" type="Boolean" default="false"/>
+    <aura:attribute name="categoryValue" type="String" default=""/>
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="categories" type="list"/>
+    <aura:attribute name="lstCase" type="list"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.categoryValue}" action="{!c.getCaseData}"/>
+    
+    <aura:if isTrue="{!v.showSpin}">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    <aura:if isTrue="{!!v.isNew}">
+        <lightning:card title="Vytvoriť príspevok" iconName="standard:case" variant="base">
+            <aura:set attribute="actions">
+                <lightning:button class="slds-theme_neutral" variant="neutral" label="Vytvoriť" onclick="{!c.newRequest}"></lightning:button>
+            </aura:set>
+            <aura:set attribute="footer"></aura:set>
+            <div class="slds-card__body_inner">
+                <lightning:select aura:id="fieldIdSelect" 
+                                  name="select1"
+                                  label="Môj problém sa týka..." 
+                                  value="{!v.categoryValue}"
+                                  required="true">
+                    <option value="">vyberte možnosť...</option>
+                    <aura:iteration items="{!v.categories}" var="ob">
+                        <option value="{!ob.value}">{!ob.label}</option>
+                    </aura:iteration>
+                </lightning:select>
+                
+                <aura:if isTrue="{!v.categoryValue !=''}">
+                    <aura:if isTrue="{!not(empty(v.lstCase))}">
+                        <lightning:accordion activeSectionName="{!v.lstCase[0].CaseNumber}">
+                            <aura:iteration items="{!v.lstCase}" var="ob">
+                                <lightning:accordionSection name="{!ob.CaseNumber}" label="{!ob.CaseNumber +': '+ ob.Subject}">
+                                    <aura:set attribute="actions">
+                                        <button value="{!ob.Id}" 
+                                                title="View" style="border:none; background:none; margin-right:20px;"
+                                                onclick="{! c.navigateToRecord }">
+                                        	Zobraziť »
+                                        </button>
+
+                                        <div class="slds-form-element slds-border_bottom  ">
+                                            <span class="slds-form-element__label">Hlasy</span>
+                                            <div class="slds-form-element__control">
+                                                <span class="slds-form-element__static">
+                                                    <p>{!ob.Total_Votes__c}</p>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                    <aura:set attribute="body">
+                                        <div>
+                                            <p>
+                                                <span style="color: rgb(0, 0, 0); font-family: &amp;quot;Open Sans&amp;quot;, Arial, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;"> 
+                                                    {!ob.Description}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <br/><br/>
+                                        <lightning:buttonIconStateful id="{!ob.Id}" 
+                                                                      onclick="{!c.saveVote}" 
+                                                                      variant="bare" 
+                                                                      iconName="utility:like" 
+                                                                      alternativeText="{!ob.Votes__r.length>0? 'Voted' : 'Vote'}"
+                                                                      disabled="{!ob.Votes__r.length>0? true : false}"
+                                                                      size="medium">
+                                        </lightning:buttonIconStateful>
+                                        <b title="{!ob.Votes__r.length>0? 'Voted' : 'Vote'}" style="vertical-align: -webkit-baseline-middle;">
+                                            &nbsp;&nbsp;{!ob.Votes__r.length>0? 'Už ste hlasovali' : 'Zahlasovať'}
+                                        </b>
+                                    </aura:set>
+                                    
+                                </lightning:accordionSection>
+                            </aura:iteration>
+                        </lightning:accordion>
+                        <aura:set attribute="else">
+                            <div>
+                                No Record Found!
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </aura:if>
+            </div>
+        </lightning:card>
+        <aura:set attribute="else">
+            <c:RaiseRequest category="{!v.categoryValue}" isNew="{!v.isNew}" />
+        </aura:set>
+    </aura:if>
+</aura:component>

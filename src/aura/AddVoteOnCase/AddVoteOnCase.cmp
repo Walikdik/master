@@ -1,0 +1,26 @@
+<aura:component controller="RaiseRequestCtrl"  
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="showSpin" type="Boolean" default="false"/>
+    <aura:attribute name="caseRecord" type="Object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.showSpin}">
+    	<lightning:spinner alternativeText="Loading" size="large" />
+    </aura:if>
+    <lightning:buttonIcon tooltip="{!v.caseRecord.Votes__r.length>0? 'Voted' : 'Vote'}"
+                          onclick="{!c.saveVote}" 
+                          variant="bare" 
+                          iconName="utility:like" 
+                          alternativeText="{!v.caseRecord.Votes__r.length>0? 'Voted' : 'Vote'}"
+                          disabled="{!v.caseRecord.Votes__r.length>0? true : false}"
+                          size="large">
+    </lightning:buttonIcon>
+
+    <b title="{!v.caseRecord.Votes__r.length>0? 'Voted' : 'Vote'}" style="vertical-align: -webkit-baseline-middle;">
+    	&nbsp;&nbsp;{!v.caseRecord.Votes__r.length>0? 'Voted' : 'Vote'}
+    </b>
+	  
+<hr/>
+</aura:component>

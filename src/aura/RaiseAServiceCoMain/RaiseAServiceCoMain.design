@@ -1,0 +1,4 @@
+<design:component>
+    <design:attribute name="allowedFileFormat" 
+                      description="Comma seprated file formats."/>
+</design:component>

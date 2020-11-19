@@ -1,0 +1,68 @@
+.THIS .slds-spinner_container{
+    left:100%;
+}
+.THIS .chrar-size{
+    font-size:12px;
+    color:#ccc;
+    float:right;
+}
+/**follwing css for upload button**/
+.THIS .atach-lbl + .cstm-inpufile .slds-form-element{
+    height:54px!important;
+    line-height:44px;
+    padding:0px;
+    cursor:pointer;
+}
+.THIS .atach-lbl + .cstm-inpufile .slds-file-selector__body{
+    width: 100%;
+    height: 54px;
+     cursor:pointer;
+}
+.THIS .atach-lbl + .cstm-inpufile span.slds-form-element__label{
+    display:none;
+}
+.THIS .cstm-inpt-brder{
+    line-height:0px;
+}
+.THIS .cstm-inpt-brder .slds-form-element{
+    padding:0px 1rem;
+    background-color:transparent;
+    font-size:1rem;
+    font-family: 'futura_lt_btlight';
+    border:none;
+    border:1px #ccc solid!important;
+    -webkit-border-radius:2px;
+    -moz-border-radius:2px;
+    -ms-border-radius:2px;
+    border-radius:2px;
+    color:#ABABAB;
+    height: 45px !important;
+    line-height:0px;
+    
+}
+.THIS .cstm-inpt-brder .slds-file-selector__dropzone{
+    top:0px!important;
+    left:0px!important;
+}
+.THIS .cstm-inpt-brder .slds-file-selector__dropzone slot{
+    width:100%;
+}
+.THIS .cstm-inpt-brder .slds-file-selector__button{
+    line-height:20px!important;
+}
+.THIS .cstm-inpt-brder .slds-text-body_small{
+    position:absolute;
+    top:65px;
+    font-family: 'futura_md_btmedium';
+    font-size: 0.86rem;
+    color: #ccc;
+    line-height:16px;
+}
+.THIS .fnt-mdum{
+    font-family: 'futura_md_btmedium';
+}
+.THIS .servc-hdng{
+    font-family: 'futura_md_btmedium';
+    font-size:1rem;
+    padding-top:0.5rem;
+}
